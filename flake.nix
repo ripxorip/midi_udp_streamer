@@ -9,13 +9,14 @@
       let
         pkgs = import nixpkgs { inherit system; };
         python-with-deps = pkgs.python3.withPackages (ps: [ ps.python-rtmidi ]);
+        drv = import ./default.nix { inherit pkgs; };
       in {
-        packages.default = python-with-deps;
+        packages.default = drv;
         apps.default = {
           type = "app";
-          program = "${python-with-deps.interpreter} ${self}/stream_midi_udp.py";
+          program = "${python-with-deps.interpreter} $out/bin/stream_midi_udp.py";
         };
-        defaultPackage = python-with-deps;
+        defaultPackage = drv;
         defaultApp = self.apps.${system}.default;
       }
     );
