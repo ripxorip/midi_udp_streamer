@@ -9,10 +9,23 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 midiin = rtmidi.MidiIn()
 ports = midiin.get_ports()
-if ports:
-    midiin.open_port(0)
+
+# Try to open the Scarlett 6i6 port if available
+scarlett_port = None
+for i, port in enumerate(ports):
+    if "Scarlett 6i6" in port:
+        scarlett_port = i
+        break
+
+if scarlett_port is not None:
+    print(f"Opening MIDI port: {ports[scarlett_port]}")
+    midiin.open_port(scarlett_port)
 else:
-    midiin.open_virtual_port("Python MIDI Input")
+    print("Scarlett 6i6 port not found, falling back to first available port.")
+    if ports:
+        midiin.open_port(0)
+    else:
+        midiin.open_virtual_port("Python MIDI Input")
 
 print(f"Listening for MIDI and sending to {UDP_IP}:{UDP_PORT}...")
 
