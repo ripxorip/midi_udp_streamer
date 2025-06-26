@@ -8,23 +8,14 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
-        python = pkgs.python3;
-        python-with-deps = python.withPackages (ps: [ ps.python-rtmidi ]);
+        python-with-deps = pkgs.python3.withPackages (ps: [ ps.python-rtmidi ]);
       in {
-        packages.default = pkgs.stdenv.mkDerivation {
-          name = "midi-udp-streamer";
-          src = ./.;
-          buildInputs = [ python-with-deps ];
-          installPhase = ''
-            mkdir -p $out/bin
-            cp stream_midi_udp.py $out/bin/stream_midi_udp.py
-          '';
-        };
+        packages.default = python-with-deps;
         apps.default = {
           type = "app";
-          program = "${python-with-deps.interpreter} ${self.packages.${system}.default}/bin/stream_midi_udp.py";
+          program = "${python-with-deps.interpreter} ${self}/stream_midi_udp.py";
         };
-        defaultPackage = self.packages.${system}.default;
+        defaultPackage = python-with-deps;
         defaultApp = self.apps.${system}.default;
       }
     );
