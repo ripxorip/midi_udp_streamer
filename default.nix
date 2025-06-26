@@ -12,5 +12,6 @@ pkgs.stdenv.mkDerivation {
     mkdir -p $out/bin
     cp stream_midi_udp.py $out/bin/
     chmod +x $out/bin/stream_midi_udp.py
+    ln -s $out/bin/stream_midi_udp.py $out/bin/midi-udp-streamer
   '';
 }
